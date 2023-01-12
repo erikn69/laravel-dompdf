@@ -2,25 +2,20 @@
 
 ### Laravel wrapper for [Dompdf HTML to PDF Converter](https://github.com/dompdf/dompdf)
 
-![Tests](https://github.com/barryvdh/laravel-dompdf/workflows/Tests/badge.svg)
+[![Tests](https://github.com/barryvdh/laravel-dompdf/workflows/Tests/badge.svg)](https://github.com/barryvdh/laravel-dompdf/actions)
+[![Packagist License](https://poser.pugx.org/barryvdh/laravel-dompdf/license.png)](http://choosealicense.com/licenses/mit/)
+[![Latest Stable Version](https://poser.pugx.org/barryvdh/laravel-dompdf/version.png)](https://packagist.org/packages/barryvdh/laravel-dompdf)
+[![Total Downloads](https://poser.pugx.org/barryvdh/laravel-dompdf/d/total.png)](https://packagist.org/packages/barryvdh/laravel-dompdf)
+[![Fruitcake](https://img.shields.io/badge/Powered%20By-Fruitcake-b2bc35.svg)](https://fruitcake.nl/)
 
+## Installation
+
+### Laravel
 Require this package in your composer.json and update composer. This will download the package and the dompdf + fontlib libraries also.
 
     composer require barryvdh/laravel-dompdf
 
-## Installation
-
-### Laravel 5.x:
-
-After updating composer, add the ServiceProvider to the providers array in config/app.php
-
-    Barryvdh\DomPDF\ServiceProvider::class,
-
-You can optionally use the facade for shorter code. Add this to your facades:
-
-    'PDF' => Barryvdh\DomPDF\Facade::class,
-
-### Lumen:
+### Lumen
 
 After updating composer add the following lines to register provider in `bootstrap/app.php`
 
@@ -39,29 +34,32 @@ To change the configuration, copy the config file to your config folder and enab
 You can create a new DOMPDF instance and load a HTML string, file or view name. You can save it to a file, or stream (show in browser) or download.
 
 ```php
+    use Barryvdh\DomPDF\Facade\Pdf;
+
+    $pdf = Pdf::loadView('pdf.invoice', $data);
+    return $pdf->download('invoice.pdf');
+```
+
+or use the App container:
+
+```php
     $pdf = App::make('dompdf.wrapper');
     $pdf->loadHTML('<h1>Test</h1>');
     return $pdf->stream();
 ```
-    
 
 Or use the facade:
-
-```php
-    $pdf = PDF::loadView('pdf.invoice', $data);
-    return $pdf->download('invoice.pdf');
-```
 
 You can chain the methods:
 
 ```php
-    return PDF::loadFile(public_path().'/myfile.html')->save('/path-to/my_stored_file.pdf')->stream('download.pdf');
+    return Pdf::loadFile(public_path().'/myfile.html')->save('/path-to/my_stored_file.pdf')->stream('download.pdf');
 ```
 
 You can change the orientation and paper size, and hide or show errors (by default, errors are shown when debug is on)
 
 ```php
-    PDF::loadHTML($html)->setPaper('a4', 'landscape')->setWarnings(false)->save('myfile.pdf')
+    Pdf::loadHTML($html)->setPaper('a4', 'landscape')->setWarnings(false)->save('myfile.pdf')
 ```
 
 If you need the output as a string, you can get the rendered PDF with the output() function, so you can save/output it yourself.
@@ -77,14 +75,14 @@ The defaults configuration settings are set in `config/dompdf.php`. Copy this fi
 
 You can still alter the dompdf options in your code before generating the pdf using this command:
 ```php
-    PDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif']);
+    Pdf::setOption(['dpi' => 150, 'defaultFont' => 'sans-serif']);
 ```
     
 Available options and their defaults:
 * __rootDir__: "{app_directory}/vendor/dompdf/dompdf"
 * __tempDir__: "/tmp" _(available in config/dompdf.php)_
-* __fontDir__: "{app_directory}/storage/fonts/" _(available in config/dompdf.php)_
-* __fontCache__: "{app_directory}/storage/fonts/" _(available in config/dompdf.php)_
+* __fontDir__: "{app_directory}/storage/fonts" _(available in config/dompdf.php)_
+* __fontCache__: "{app_directory}/storage/fonts" _(available in config/dompdf.php)_
 * __chroot__: "{app_directory}" _(available in config/dompdf.php)_
 * __logOutputFile__: "/tmp/log.htm"
 * __defaultMediaType__: "screen" _(available in config/dompdf.php)_
