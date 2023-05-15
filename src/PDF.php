@@ -142,12 +142,12 @@ class PDF
     /**
      * Replace all the Options from DomPDF
      *
-     * @deprecated Use setOption to override individual options.
      * @param array<string, mixed> $options
      */
     public function setOptions(array $options): self
     {
-        $options = new Options($options);
+        $options = app()->make('dompdf.options');
+        $options->set($options);
         $this->dompdf->setOptions($options);
         return $this;
     }
